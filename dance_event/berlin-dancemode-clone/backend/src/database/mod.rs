@@ -35,7 +35,7 @@ impl Database {
         
         // Also index by email
         let email_key = format!("user_email:{}", user.email);
-        self.db.insert(email_key, user.id.to_string())?;
+        self.db.insert(email_key, user.id.to_string().as_bytes())?;
         
         Ok(())
     }

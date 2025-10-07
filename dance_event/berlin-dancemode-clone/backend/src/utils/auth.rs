@@ -63,9 +63,7 @@ pub async fn jwt_middleware(
             Ok(req)
         }
         Err(_) => {
-            let response = actix_web::HttpResponse::Unauthorized()
-                .json(crate::models::ApiResponse::<()>::error("Invalid token".to_string()));
-            Err((actix_web::error::ErrorUnauthorized(response), req))
+            Err((actix_web::error::ErrorUnauthorized("Invalid token"), req))
         }
     }
 }

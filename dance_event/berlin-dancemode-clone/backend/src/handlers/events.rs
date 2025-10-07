@@ -1,5 +1,6 @@
 use actix_web::{web, HttpResponse, Result};
 use uuid::Uuid;
+use validator::Validate;
 use crate::{
     database::Database,
     models::*,
