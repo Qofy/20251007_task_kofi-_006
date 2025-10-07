@@ -40,6 +40,15 @@ pub struct CreateUserRequest {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
+pub struct SimpleRegisterRequest {
+    pub username: String,
+    #[validate(email(message = "Invalid email address"))]
+    pub email: String,
+    #[validate(length(min = 6, message = "Password must be at least 6 characters"))]
+    pub password: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Validate)]
 pub struct LoginRequest {
     #[validate(email(message = "Invalid email address"))]
     pub email: String,

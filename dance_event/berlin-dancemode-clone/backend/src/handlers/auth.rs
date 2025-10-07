@@ -10,7 +10,7 @@ use uuid::Uuid;
 
 pub async fn register(
     db: web::Data<Database>,
-    user_data: web::Json<CreateUserRequest>,
+    user_data: web::Json<SimpleRegisterRequest>,
 ) -> Result<HttpResponse> {
     // Validate input
     if let Err(validation_errors) = user_data.validate() {
@@ -55,15 +55,15 @@ pub async fn register(
         }
     };
 
-    // Create user
+    // Create user with username as first_name for simplicity
     let user = User {
         id: Uuid::new_v4(),
         email: user_data.email.clone(),
         password_hash,
-        first_name: user_data.first_name.clone(),
-        last_name: user_data.last_name.clone(),
-        phone: user_data.phone.clone(),
-        dance_experience: user_data.dance_experience.clone(),
+        first_name: user_data.username.clone(), // Use username as first name
+        last_name: "User".to_string(), // Default last name
+        phone: None,
+        dance_experience: DanceExperience::Beginner, // Default to beginner
         created_at: Utc::now(),
         updated_at: Utc::now(),
         is_active: true,
