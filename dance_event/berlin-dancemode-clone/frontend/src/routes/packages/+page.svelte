@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import api from '$lib/api.js';
   
   let packages = [];
@@ -87,8 +88,8 @@
             </div>
             
             <div class="package-action">
-              <button class="btn-package" class:btn-featured={pkg.featured}>
-                {pkg.featured ? 'Choose Popular' : 'Select Package'}
+              <button class="btn-package" class:btn-featured={pkg.featured} on:click={() => goto(`/payment?package=${pkg.id}`)}>
+                {pkg.featured ? 'Buy Now - €' + pkg.price : 'Buy Now - €' + pkg.price}
               </button>
             </div>
           </div>
@@ -362,29 +363,49 @@
 
   .btn-package {
     width: 100%;
-    padding: 1rem;
+    padding: 1rem 1.5rem;
     border-radius: 12px;
     font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     border: none;
-    background: #f7fafc;
-    color: #4a5568;
-    border: 2px solid #e2e8f0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .btn-package:hover {
-    background: #edf2f7;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  }
+
+  .btn-package:active {
+    transform: translateY(0);
   }
 
   .btn-featured {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
+    background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+    color: #1a202c;
+    border: none;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    font-weight: 700;
+    animation: pulse 2s infinite;
   }
 
   .btn-featured:hover {
-    background: #5a67d8;
+    background: linear-gradient(135deg, #ffed4e 0%, #ff9500 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); }
+    50% { box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6); }
+    100% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); }
   }
 
   .custom-package {
