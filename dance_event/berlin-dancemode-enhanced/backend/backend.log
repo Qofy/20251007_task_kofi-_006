@@ -6,18 +6,6 @@ warning: unused import: `DateTime`
   |
   = note: `#[warn(unused_imports)]` on by default
 
-warning: unused import: `validator::Validate`
- --> src/handlers/registrations.rs:2:5
-  |
-2 | use validator::Validate;
-  |     ^^^^^^^^^^^^^^^^^^^
-
-warning: unused import: `chrono::Utc`
- --> src/handlers/registrations.rs:4:5
-  |
-4 | use chrono::Utc;
-  |     ^^^^^^^^^^^
-
 warning: unused variable: `db`
   --> src/handlers/users.rs:80:5
    |
@@ -33,12 +21,12 @@ warning: unused variable: `user_data`
    |     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_user_data`
 
 warning: method `get_user_registrations` is never used
-   --> src/database/mod.rs:125:18
+   --> src/database/mod.rs:135:18
     |
  14 | impl Database {
     | ------------- method in this implementation
 ...
-125 |     pub async fn get_user_registrations(&self, user_id: &Uu...
+135 |     pub async fn get_user_registrations(&self, user_id: &Uuid) -> Result<Vec<Registration>> {
     |                  ^^^^^^^^^^^^^^^^^^^^^^
     |
     = note: `#[warn(dead_code)]` on by default
@@ -55,27 +43,6 @@ warning: function `jwt_middleware` is never used
 56 | pub async fn jwt_middleware(
    |              ^^^^^^^^^^^^^^
 
-warning: `berlin-dancemode-backend` (bin "berlin-dancemode-backend") generated 8 warnings (run `cargo fix --bin "berlin-dancemode-backend"` to apply 3 suggestions)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.44s
-     Running `target/debug/berlin-dancemode-backend`
-[2025-10-08T07:28:27Z INFO  berlin_dancemode_backend] Database initialized successfully
-[2025-10-08T07:28:27Z INFO  berlin_dancemode_backend] Sample data initialized
-[2025-10-08T07:28:27Z INFO  berlin_dancemode_backend] Starting server at http://127.0.0.1:8080
-[2025-10-08T07:28:27Z INFO  actix_server::builder] starting 8 workers
-[2025-10-08T07:28:27Z INFO  actix_server::server] Actix runtime found; starting in Actix runtime
-[2025-10-08T07:28:27Z INFO  actix_server::server] starting service: "actix-web-service-127.0.0.1:8080", workers: 8, listening on: 127.0.0.1:8080
-[2025-10-08T07:28:47Z INFO  actix_web::middleware::logger] 127.0.0.1 "GET /health HTTP/1.1" 200 99 "-" "curl/8.7.1" 0.000987
-[2025-10-08T07:29:03Z INFO  actix_web::middleware::logger] 127.0.0.1 "GET /api/events HTTP/1.1" 200 2568 "-" "curl/8.7.1" 0.000922
-[2025-10-08T07:35:22Z INFO  actix_web::middleware::logger] 127.0.0.1 "GET /api/data/export HTTP/1.1" 200 4571 "-" "curl/8.7.1" 0.006611
-[2025-10-08T07:35:26Z INFO  actix_web::middleware::logger] 127.0.0.1 "GET /api/data/export HTTP/1.1" 200 4571 "-" "curl/8.7.1" 0.000681
-[2025-10-08T07:35:31Z INFO  actix_web::middleware::logger] 127.0.0.1 "GET /api/data/statistics HTTP/1.1" 200 181 "-" "curl/8.7.1" 0.000574
-[2025-10-08T07:38:25Z INFO  actix_server::server] SIGTERM received; starting graceful shutdown
-[2025-10-08T07:38:25Z INFO  actix_server::accept] accept thread stopped
-[2025-10-08T07:38:25Z INFO  actix_server::worker] shutting down idle worker
-[2025-10-08T07:38:25Z INFO  actix_server::worker] shutting down idle worker
-[2025-10-08T07:38:25Z INFO  actix_server::worker] shutting down idle worker
-[2025-10-08T07:38:25Z INFO  actix_server::worker] shutting down idle worker
-[2025-10-08T07:38:25Z INFO  actix_server::worker] shutting down idle worker
-[2025-10-08T07:38:25Z INFO  actix_server::worker] shutting down idle worker
-[2025-10-08T07:38:25Z INFO  actix_server::worker] shutting down idle worker
-[2025-10-08T07:38:25Z INFO  actix_server::worker] shutting down idle worker
+warning: `berlin-dancemode-backend` (bin "berlin-dancemode-backend") generated 6 warnings (run `cargo fix --bin "berlin-dancemode-backend"` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 0.37s
+     Running `target/release/berlin-dancemode-backend`
