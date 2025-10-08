@@ -1,0 +1,9 @@
+/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-clone/backend/target/debug/deps/alloc_stdlib-8cf3f2c171b5ce91.d: /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/lib.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/heap_alloc.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/std_alloc.rs
+
+/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-clone/backend/target/debug/deps/liballoc_stdlib-8cf3f2c171b5ce91.rlib: /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/lib.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/heap_alloc.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/std_alloc.rs
+
+/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-clone/backend/target/debug/deps/liballoc_stdlib-8cf3f2c171b5ce91.rmeta: /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/lib.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/heap_alloc.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/std_alloc.rs
+
+/Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/lib.rs:
+/Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/heap_alloc.rs:
+/Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/std_alloc.rs:

@@ -1,0 +1,23 @@
+[package]
+name = "berlin-dancemode-backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.4"
+actix-cors = "0.6"
+actix-web-httpauth = "0.8"
+tokio = { version = "1.35", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sled = "0.34"
+uuid = { version = "1.6", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+bcrypt = "0.15"
+jsonwebtoken = "9.2"
+env_logger = "0.10"
+log = "0.4"
+anyhow = "1.0"
+thiserror = "1.0"
+validator = { version = "0.16", features = ["derive"] }
+reqwest = { version = "0.11", features = ["json"] }

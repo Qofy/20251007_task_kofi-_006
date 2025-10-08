@@ -1,0 +1,10 @@
+/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-clone/backend/target/debug/deps/time_core-17352c511d7b9fec.d: /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/lib.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/convert.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/hint.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/util.rs
+
+/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-clone/backend/target/debug/deps/libtime_core-17352c511d7b9fec.rlib: /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/lib.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/convert.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/hint.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/util.rs
+
+/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-clone/backend/target/debug/deps/libtime_core-17352c511d7b9fec.rmeta: /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/lib.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/convert.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/hint.rs /Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/util.rs
+
+/Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/lib.rs:
+/Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/convert.rs:
+/Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/hint.rs:
+/Users/safokofi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-core-0.1.6/src/util.rs:
