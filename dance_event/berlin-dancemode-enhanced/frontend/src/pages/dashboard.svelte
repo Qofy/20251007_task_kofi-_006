@@ -79,7 +79,7 @@
 <main>
   <div class="container">
     <header class="page-header">
-      <h1>Welcome back, {$authStore.user?.username || 'User'}!</h1>
+      <h1>Welcome back, {$authStore.user?.firstName || $authStore.user?.username || 'User'}!</h1>
       <p>Your personal dance event dashboard</p>
     </header>
 

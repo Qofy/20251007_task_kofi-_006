@@ -34,11 +34,15 @@
         <a href={safeUrl('/dashboard')}>Dashboard</a>
         <div class="user-profile">
           <div class="user-avatar">
-            <div class="avatar-circle">
-              {$authStore.user?.username?.charAt(0).toUpperCase() || 'U'}
-            </div>
+            {#if $authStore.user?.avatar}
+              <img src={$authStore.user.avatar} alt="{$authStore.user.firstName || 'User'}" class="avatar-image" />
+            {:else}
+              <div class="avatar-circle">
+                {$authStore.user?.firstName?.charAt(0).toUpperCase() || $authStore.user?.username?.charAt(0).toUpperCase() || 'U'}
+              </div>
+            {/if}
           </div>
-          <span class="user-name">{$authStore.user?.username || 'User'}</span>
+          <span class="user-name">{$authStore.user?.firstName || $authStore.user?.username || 'User'}</span>
           <button class="logout-btn" on:click={handleLogout}>Logout</button>
         </div>
       {:else}
@@ -121,6 +125,14 @@
 
   .user-avatar {
     position: relative;
+  }
+
+  .avatar-image {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    object-fit: cover;
   }
 
   .avatar-circle {

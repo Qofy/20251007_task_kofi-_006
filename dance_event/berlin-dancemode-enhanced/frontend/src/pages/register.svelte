@@ -2,6 +2,8 @@
   import { authStore } from '../stores/auth.js'
   import { url, goto } from '@roxi/routify'
 
+  let firstName = ''
+  let lastName = ''
   let username = ''
   let email = ''
   let password = ''
@@ -11,7 +13,7 @@
   let error = ''
 
   async function handleRegister() {
-    if (!username || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !username || !email || !password || !confirmPassword) {
       error = 'Please fill in all fields'
       return
     }
@@ -30,7 +32,7 @@
     error = ''
 
     try {
-      await authStore.register(username, email, password, isCreator)
+      await authStore.register(firstName, lastName, username, email, password, isCreator)
       $goto('/')
     } catch (err) {
       error = err.message || 'Registration failed'
@@ -59,6 +61,34 @@
           {error}
         </div>
       {/if}
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input
+            id="firstName"
+            type="text"
+            bind:value={firstName}
+            on:keydown={handleKeydown}
+            placeholder="Your first name"
+            required
+            disabled={loading}
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input
+            id="lastName"
+            type="text"
+            bind:value={lastName}
+            on:keydown={handleKeydown}
+            placeholder="Your last name"
+            required
+            disabled={loading}
+          />
+        </div>
+      </div>
 
       <div class="form-group">
         <label for="username">Username</label>
@@ -200,10 +230,21 @@
     border: 1px solid #feb2b2;
   }
 
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
   .form-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+  }
+
+  .form-row .form-group {
+    margin-bottom: 0;
   }
 
   .form-group label {
@@ -359,6 +400,15 @@
 
     .register-header h1 {
       font-size: 1.75rem;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .form-row .form-group {
+      margin-bottom: 1.5rem;
     }
   }
 </style>
