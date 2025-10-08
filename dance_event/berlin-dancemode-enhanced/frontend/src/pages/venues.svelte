@@ -7,13 +7,22 @@
   let events = []
   let userJoinedEvents = []
   let userEventVenues = []
+  let bookings = []
   let loading = true
-  let activeTab = 'all' // 'all', 'my-venues'
+  let activeTab = 'all' // 'all', 'my-venues', 'bookings'
 
   onMount(async () => {
     await Promise.all([loadVenues(), loadEvents()])
     loadUserJoinedEvents()
+    loadBookings()
   })
+
+  function loadBookings() {
+    const saved = localStorage.getItem('bookings')
+    if (saved) {
+      bookings = JSON.parse(saved)
+    }
+  }
 
   async function loadVenues() {
     try {
@@ -36,7 +45,7 @@
   }
 
   function loadUserJoinedEvents() {
-    if (!$authStore.isAuthenticated) return
+    if (!$authStore.isAuthenticated || !Array.isArray(events)) return
     
     const saved = localStorage.getItem('joinedEvents')
     if (saved) {
@@ -45,25 +54,25 @@
       
       // Get unique venues from user's joined events
       const venueNames = [...new Set(userJoinedEvents.map(event => event.venue))]
-      userEventVenues = venues.filter(venue => 
+      userEventVenues = Array.isArray(venues) ? venues.filter(venue => 
         venue.name && venueNames.some(venueName => 
           venue.name.toLowerCase().includes(venueName.toLowerCase()) ||
           venueName.toLowerCase().includes(venue.name.toLowerCase())
         )
-      )
+      ) : []
       
       // Add venues that don't exist in the venues list but are in user events
       venueNames.forEach(venueName => {
-        const existsInVenues = venues.some(venue => 
+        const existsInVenues = Array.isArray(venues) ? venues.some(venue => 
           venue.name && (
             venue.name.toLowerCase().includes(venueName.toLowerCase()) ||
             venueName.toLowerCase().includes(venue.name.toLowerCase())
           )
-        )
+        ) : false
         
         if (!existsInVenues) {
           // Create a venue entry for events venues not in the main venues list
-          const eventsAtVenue = userJoinedEvents.filter(event => event.venue === venueName)
+          const eventsAtVenue = Array.isArray(userJoinedEvents) ? userJoinedEvents.filter(event => event.venue === venueName) : []
           userEventVenues.push({
             id: `venue-${venueName.replace(/\s+/g, '-').toLowerCase()}`,
             name: venueName,
@@ -89,14 +98,26 @@
   }
 
   function getEventsAtVenue(venueName) {
+    if (!Array.isArray(userJoinedEvents)) return []
     return userJoinedEvents.filter(event => 
-      event.venue.toLowerCase().includes(venueName.toLowerCase()) ||
-      venueName.toLowerCase().includes(event.venue.toLowerCase())
+      event.venue && venueName && (
+        event.venue.toLowerCase().includes(venueName.toLowerCase()) ||
+        venueName.toLowerCase().includes(event.venue.toLowerCase())
+      )
     )
   }
 
+  // Helper functions to normalize event data (handle both API formats)
+  function getEventName(event) {
+    return event.title || event.name || 'Untitled Event'
+  }
+
+  function getEventDate(event) {
+    return event.start_date || event.date || new Date().toISOString()
+  }
+
   // Reactive statement to update when auth state changes
-  $: if ($authStore.isAuthenticated && events.length > 0) {
+  $: if ($authStore.isAuthenticated && Array.isArray(events) && events.length > 0) {
     loadUserJoinedEvents()
   }
 </script>
@@ -118,7 +139,7 @@
         class="tab-button {activeTab === 'all' ? 'active' : ''}" 
         on:click={() => setActiveTab('all')}
       >
-        🌟 All Venues ({venues.length})
+        🌟 All Venues ({Array.isArray(venues) ? venues.length : 0})
       </button>
       
       {#if $authStore.isAuthenticated}
@@ -126,7 +147,14 @@
           class="tab-button {activeTab === 'my-venues' ? 'active' : ''}" 
           on:click={() => setActiveTab('my-venues')}
         >
-          🎫 My Event Venues ({userEventVenues.length})
+          🎫 My Event Venues ({Array.isArray(userEventVenues) ? userEventVenues.length : 0})
+        </button>
+        
+        <button 
+          class="tab-button {activeTab === 'bookings' ? 'active' : ''}" 
+          on:click={() => setActiveTab('bookings')}
+        >
+          📋 My Bookings ({Array.isArray(bookings) ? bookings.length : 0})
         </button>
       {/if}
     </div>
@@ -136,6 +164,56 @@
         <div class="spinner"></div>
         <p>Loading venues...</p>
       </div>
+    {:else if activeTab === 'bookings'}
+      {#if bookings.length > 0}
+        <div class="bookings-grid">
+          {#each bookings as booking}
+            <div class="booking-card">
+              <div class="booking-header">
+                <div class="booking-status {booking.status.toLowerCase()}">
+                  {booking.status}
+                </div>
+                <div class="booking-date">
+                  Booked: {new Date(booking.bookedAt).toLocaleDateString()}
+                </div>
+              </div>
+              
+              <div class="booking-content">
+                <h3>{booking.eventTitle}</h3>
+                <div class="booking-details">
+                  <div class="detail-row">
+                    <span class="label">📅 Event Date:</span>
+                    <span class="value">{new Date(booking.eventDate).toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="label">💰 Price:</span>
+                    <span class="value">€{booking.eventPrice}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="label">🎫 Booking ID:</span>
+                    <span class="value">{booking.id.slice(0, 8)}...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="booking-actions">
+                <button class="btn-primary">View Details</button>
+                <button class="btn-secondary">Cancel Booking</button>
+              </div>
+            </div>
+          {/each}
+        </div>
+      {:else}
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <h3>No Bookings Yet</h3>
+          <p>Book some events to see your bookings here!</p>
+        </div>
+      {/if}
     {:else}
       {@const displayVenues = getDisplayVenues()}
       {#if displayVenues.length > 0}
@@ -171,9 +249,9 @@
                     <div class="venue-events">
                       {#each getEventsAtVenue(venue.name) as event}
                         <div class="venue-event-item">
-                          <span class="event-name">{event.name}</span>
+                          <span class="event-name">{getEventName(event)}</span>
                           <span class="event-date">
-                            {new Date(event.date).toLocaleDateString('en', { 
+                            {new Date(getEventDate(event)).toLocaleDateString('en', { 
                               month: 'short', 
                               day: 'numeric' 
                             })}
@@ -583,6 +661,99 @@
     font-size: 1.5rem;
     color: #2d3748;
     margin-bottom: 0.5rem;
+  }
+
+  /* Bookings Styles */
+  .bookings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .booking-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid #667eea;
+  }
+
+  .booking-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .booking-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .booking-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .booking-status.pending {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+  }
+
+  .booking-status.confirmed {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+  }
+
+  .booking-date {
+    font-size: 0.85rem;
+    opacity: 0.9;
+  }
+
+  .booking-content {
+    padding: 1.5rem;
+  }
+
+  .booking-content h3 {
+    color: #2d3748;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+  }
+
+  .booking-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .detail-row .label {
+    color: #718096;
+    font-size: 0.9rem;
+  }
+
+  .detail-row .value {
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .booking-actions {
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    display: flex;
+    gap: 1rem;
   }
 
   @media (max-width: 768px) {

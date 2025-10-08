@@ -82,7 +82,20 @@ export const apiService = {
     load: () => api.get('/api/elements'),
     update: (id, elementData) => api.put(`/api/elements/${id}`, elementData),
     delete: (id) => api.delete(`/api/elements/${id}`),
+  },
+
+  // Booking/Registration system
+  registrations: {
+    create: (registrationData) => api.post('/api/registrations', registrationData),
+    getUserRegistrations: () => api.get('/api/registrations'),
+    processPayment: (registrationId, paymentData) => api.post(`/api/registrations/${registrationId}/payment`, paymentData),
   }
 }
+
+// Helper functions for backward compatibility
+export const getEvents = () => apiService.events.getAll()
+export const getVenues = () => apiService.venues.getAll()
+export const createEvent = (eventData) => apiService.events.create(eventData)
+export const bookEvent = (eventId) => apiService.registrations.create({ event_id: eventId })
 
 export default apiService

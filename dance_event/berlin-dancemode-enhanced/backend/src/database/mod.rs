@@ -92,6 +92,16 @@ impl Database {
         Ok(events)
     }
 
+    pub async fn increment_event_participants(&self, event_id: &Uuid) -> Result<()> {
+        if let Some(mut event) = self.get_event_by_id(event_id).await? {
+            event.current_participants += 1;
+            let key = format!("event:{}", event.id);
+            let value = self.serialize(&event)?;
+            self.db.insert(key, value)?;
+        }
+        Ok(())
+    }
+
     // Packages
     pub async fn create_package(&self, package: &Package) -> Result<()> {
         let key = format!("package:{}", package.id);
