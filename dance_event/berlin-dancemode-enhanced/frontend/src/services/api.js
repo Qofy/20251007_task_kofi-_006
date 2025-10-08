@@ -13,9 +13,19 @@ const api = axios.create({
 
 // Add auth token to requests
 api.interceptors.request.use((config) => {
-  const auth = JSON.parse(localStorage.getItem('auth') || '{}')
-  if (auth.token) {
-    config.headers.Authorization = `Bearer ${auth.token}`
+  try {
+    const auth = JSON.parse(localStorage.getItem('auth') || '{}')
+    if (auth.token) {
+      // Ensure token contains only valid ASCII characters
+      const cleanToken = auth.token.replace(/[^\x00-\x7F]/g, "")
+      if (cleanToken && cleanToken.length > 0) {
+        config.headers.Authorization = `Bearer ${cleanToken}`
+      }
+    }
+  } catch (error) {
+    console.error('Error processing auth token:', error)
+    // Clear corrupted auth data
+    localStorage.removeItem('auth')
   }
   return config
 })

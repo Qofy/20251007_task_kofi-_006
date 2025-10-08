@@ -24,15 +24,22 @@ function createAuthStore() {
   return {
     subscribe,
     login: (userData, token) => {
+      // Clean token to ensure it only contains valid ASCII characters
+      const cleanToken = token ? token.replace(/[^\x00-\x7F]/g, "") : null
+      
       const authData = {
         isAuthenticated: true,
         user: userData,
-        token,
+        token: cleanToken,
         isCreator: userData.role === 'creator' || userData.isCreator
       }
       set(authData)
       if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('auth', JSON.stringify(authData))
+        try {
+          localStorage.setItem('auth', JSON.stringify(authData))
+        } catch (error) {
+          console.error('Error storing auth data:', error)
+        }
       }
     },
     logout: () => {
