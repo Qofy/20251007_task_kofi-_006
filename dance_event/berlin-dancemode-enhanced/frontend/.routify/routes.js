@@ -1,11 +1,11 @@
 
 /**
  * @roxi/routify 2.18.18
- * File generated Wed Oct 08 2025 14:29:53 GMT+0200 (Central European Summer Time)
+ * File generated Wed Oct 08 2025 14:48:58 GMT+0200 (Central European Summer Time)
  */
 
 export const __version = "2.18.18"
-export const __timestamp = "2025-10-08T12:29:53.939Z"
+export const __timestamp = "2025-10-08T12:48:58.240Z"
 
 //buildRoutes
 import { buildClientTree } from "@roxi/routify/runtime/buildRoutes.js"
@@ -71,6 +71,31 @@ export const _tree = {
         "prerender": true
       },
       "path": "/creator"
+    },
+    {
+      "isFile": true,
+      "isDir": false,
+      "file": "creator.svelte",
+      "filepath": "/creator.svelte",
+      "name": "creator",
+      "ext": "svelte",
+      "badExt": false,
+      "absolutePath": "/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-enhanced/frontend/src/pages/creator.svelte",
+      "importPath": "../src/pages/creator.svelte",
+      "isLayout": false,
+      "isReset": false,
+      "isIndex": false,
+      "isFallback": false,
+      "isPage": true,
+      "ownMeta": {},
+      "meta": {
+        "recursive": true,
+        "preload": false,
+        "prerender": true
+      },
+      "path": "/creator",
+      "id": "_creator",
+      "component": () => import('../src/pages/creator.svelte').then(m => m.default)
     },
     {
       "isFile": true,
