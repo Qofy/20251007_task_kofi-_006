@@ -8,13 +8,14 @@
   let userJoinedEvents = []
   let userEventVenues = []
   let bookings = []
+  let bookedVenues = [] // Only venues with booked events
   let loading = true
-  let activeTab = 'all' // 'all', 'my-venues', 'bookings'
+  let activeTab = 'booked-venues' // Only show booked venues by default
 
   onMount(async () => {
     await Promise.all([loadVenues(), loadEvents()])
-    loadUserJoinedEvents()
     loadBookings()
+    loadBookedVenues()
   })
 
   function loadBookings() {
@@ -42,6 +43,34 @@
     } finally {
       loading = false
     }
+  }
+
+  function loadBookedVenues() {
+    if (!bookings.length || !venues.length || !events.length) {
+      bookedVenues = []
+      return
+    }
+
+    // Get unique venue IDs from bookings
+    const bookedVenueIds = [...new Set(bookings.map(booking => booking.venueId))]
+    
+    // Filter venues to only those with booked events
+    bookedVenues = venues.filter(venue => bookedVenueIds.includes(venue.id))
+    
+    // Enhance venues with booking information
+    bookedVenues = bookedVenues.map(venue => {
+      const venueBookings = bookings.filter(booking => booking.venueId === venue.id)
+      const bookedEvents = events.filter(event => 
+        venueBookings.some(booking => booking.eventId === event.id)
+      )
+      
+      return {
+        ...venue,
+        bookedEvents: bookedEvents,
+        bookingsCount: venueBookings.length,
+        isBookedVenue: true
+      }
+    })
   }
 
   function loadUserJoinedEvents() {
@@ -94,7 +123,14 @@
   }
 
   function getDisplayVenues() {
-    return activeTab === 'my-venues' ? userEventVenues : venues
+    switch (activeTab) {
+      case 'booked-venues':
+        return bookedVenues
+      case 'bookings':
+        return [] // Handled separately in the template
+      default:
+        return bookedVenues // Default to only showing booked venues
+    }
   }
 
   function getEventsAtVenue(venueName) {
@@ -116,9 +152,9 @@
     return event.start_date || event.date || new Date().toISOString()
   }
 
-  // Reactive statement to update when auth state changes
-  $: if ($authStore.isAuthenticated && Array.isArray(events) && events.length > 0) {
-    loadUserJoinedEvents()
+  // Reactive statements to update when data changes
+  $: if (bookings.length && venues.length && events.length) {
+    loadBookedVenues()
   }
 </script>
 
@@ -129,34 +165,25 @@
 <main>
   <div class="container">
     <header class="page-header">
-      <h1>Amazing Venues</h1>
-      <p>Discover iconic venues and places where your events are happening</p>
+      <h1>Your Booked Venues</h1>
+      <p>Venues where you have booked events from the events page</p>
     </header>
 
     <!-- Venue Tabs -->
     <div class="tabs">
       <button 
-        class="tab-button {activeTab === 'all' ? 'active' : ''}" 
-        on:click={() => setActiveTab('all')}
+        class="tab-button {activeTab === 'booked-venues' ? 'active' : ''}" 
+        on:click={() => setActiveTab('booked-venues')}
       >
-        🌟 All Venues ({Array.isArray(venues) ? venues.length : 0})
+        � Booked Venues ({Array.isArray(bookedVenues) ? bookedVenues.length : 0})
       </button>
       
-      {#if $authStore.isAuthenticated}
-        <button 
-          class="tab-button {activeTab === 'my-venues' ? 'active' : ''}" 
-          on:click={() => setActiveTab('my-venues')}
-        >
-          🎫 My Event Venues ({Array.isArray(userEventVenues) ? userEventVenues.length : 0})
-        </button>
-        
-        <button 
-          class="tab-button {activeTab === 'bookings' ? 'active' : ''}" 
-          on:click={() => setActiveTab('bookings')}
-        >
-          📋 My Bookings ({Array.isArray(bookings) ? bookings.length : 0})
-        </button>
-      {/if}
+      <button 
+        class="tab-button {activeTab === 'bookings' ? 'active' : ''}" 
+        on:click={() => setActiveTab('bookings')}
+      >
+        📋 My Bookings ({Array.isArray(bookings) ? bookings.length : 0})
+      </button>
     </div>
 
     {#if loading}
@@ -219,14 +246,14 @@
       {#if displayVenues.length > 0}
         <div class="venues-grid">
           {#each displayVenues as venue}
-            <div class="venue-card {venue.isFromEvents ? 'event-venue' : ''}">
+            <div class="venue-card {venue.isBookedVenue ? 'booked-venue' : ''}">
               <div class="venue-header">
                 <div class="venue-image">
                   <div class="venue-overlay">
                     <h3>{venue.name}</h3>
                     <div class="venue-rating">
-                      {#if venue.isFromEvents}
-                        <span class="event-badge">🎫 Your Events</span>
+                      {#if venue.isBookedVenue}
+                        <span class="event-badge">📅 {venue.bookingsCount} Booked Events</span>
                       {:else}
                         <span class="stars">★★★★★</span>
                         <span class="rating-text">4.8</span>
@@ -243,19 +270,20 @@
                 </div>
                 <p class="venue-description">{venue.description}</p>
                 
-                {#if venue.isFromEvents}
+                {#if venue.isBookedVenue && venue.bookedEvents}
                   <div class="my-events-section">
-                    <h4>🎭 Your Events at this Venue:</h4>
+                    <h4>� Your Booked Events at this Venue:</h4>
                     <div class="venue-events">
-                      {#each getEventsAtVenue(venue.name) as event}
+                      {#each venue.bookedEvents as event}
                         <div class="venue-event-item">
-                          <span class="event-name">{getEventName(event)}</span>
+                          <span class="event-name">{event.title || event.name}</span>
                           <span class="event-date">
-                            {new Date(getEventDate(event)).toLocaleDateString('en', { 
+                            {new Date(event.start_date || event.date).toLocaleDateString('en', { 
                               month: 'short', 
                               day: 'numeric' 
                             })}
                           </span>
+                          <span class="event-price">€{event.price}</span>
                         </div>
                       {/each}
                     </div>
@@ -275,18 +303,18 @@
                     <i class="icon">💰</i>
                     <span>Entry: €{venue.entry_price || '15-25'}</span>
                   </div>
-                  {#if venue.isFromEvents}
+                  {#if venue.isBookedVenue}
                     <div class="detail-item">
                       <i class="icon">🎟️</i>
-                      <span>Events: {venue.eventsCount} joined</span>
+                      <span>Bookings: {venue.bookingsCount} events booked</span>
                     </div>
                   {/if}
                 </div>
                 
                 <div class="venue-features">
-                  {#if venue.isFromEvents}
-                    <span class="feature-tag event-tag">Your Events</span>
-                    <span class="feature-tag">Joined Venue</span>
+                  {#if venue.isBookedVenue}
+                    <span class="feature-tag booked-tag">Booked Events</span>
+                    <span class="feature-tag">Your Venue</span>
                   {:else}
                     <span class="feature-tag">Dance Floor</span>
                     <span class="feature-tag">Bar</span>
@@ -297,8 +325,8 @@
               </div>
               
               <div class="venue-footer">
-                {#if venue.isFromEvents}
-                  <button class="btn-primary">📅 View My Events</button>
+                {#if venue.isBookedVenue}
+                  <button class="btn-primary">📅 View Booked Events</button>
                   <button class="btn-secondary">📍 Get Directions</button>
                 {:else}
                   <button class="btn-primary">View Events</button>
@@ -310,27 +338,12 @@
         </div>
       {:else}
         <div class="empty-state">
-          <div class="empty-icon">
-            {#if activeTab === 'my-venues'}
-              🎫
-            {:else}
-              🏢
-            {/if}
+          <div class="empty-icon"></div>
+          <h3>No Booked Venues Yet</h3>
+          <p>Book some events from the Events page to see their venues here!</p>
+          <div class="empty-actions">
+            <a href="/events" class="btn-primary">Browse Events</a>
           </div>
-          <h3>
-            {#if activeTab === 'my-venues'}
-              No Event Venues Yet
-            {:else}
-              No Venues Available
-            {/if}
-          </h3>
-          <p>
-            {#if activeTab === 'my-venues'}
-              Join some events to see their venues here!
-            {:else}
-              We're adding more amazing venues soon!
-            {/if}
-          </p>
         </div>
       {/if}
     {/if}
@@ -445,13 +458,13 @@
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   }
 
-  .venue-card.event-venue {
-    border: 2px solid #48bb78;
-    box-shadow: 0 4px 20px rgba(72, 187, 120, 0.15);
+  .venue-card.booked-venue {
+    border: 2px solid #667eea;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
   }
 
-  .venue-card.event-venue:hover {
-    box-shadow: 0 12px 40px rgba(72, 187, 120, 0.25);
+  .venue-card.booked-venue:hover {
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.25);
   }
 
   .venue-header {
@@ -502,7 +515,7 @@
   }
 
   .event-badge {
-    background: rgba(72, 187, 120, 0.9);
+    background: rgba(102, 126, 234, 0.9);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -511,8 +524,8 @@
   }
 
   .my-events-section {
-    background: #f0fff4;
-    border: 2px solid #c6f6d5;
+    background: #f0f4ff;
+    border: 2px solid #c3d9ff;
     border-radius: 12px;
     padding: 1rem;
     margin-bottom: 1.5rem;
@@ -537,7 +550,13 @@
     background: white;
     padding: 0.5rem 0.75rem;
     border-radius: 8px;
-    border-left: 4px solid #48bb78;
+    border-left: 4px solid #667eea;
+  }
+
+  .event-price {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 0.8rem;
   }
 
   .event-name {
