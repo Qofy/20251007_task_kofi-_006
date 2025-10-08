@@ -258,3 +258,40 @@ pub struct Claims {
     pub exp: usize, // Expiration time
     pub iat: usize, // Issued at
 }
+
+// Data export/import structures
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DatabaseExport {
+    pub users: Vec<User>,
+    pub events: Vec<Event>,
+    pub venues: Vec<Venue>,
+    pub packages: Vec<Package>,
+    pub registrations: Vec<Registration>,
+    pub exported_at: DateTime<Utc>,
+    pub version: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DataStatistics {
+    pub users: usize,
+    pub events: usize,
+    pub venues: usize,
+    pub packages: usize,
+    pub registrations: usize,
+    pub total_records: usize,
+    pub last_updated: DateTime<Utc>,
+}
+
+// Bulk operations requests
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BulkCreateRequest<T> {
+    pub data: Vec<T>,
+    pub replace_existing: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BulkOperationResponse {
+    pub success_count: usize,
+    pub error_count: usize,
+    pub errors: Vec<String>,
+}

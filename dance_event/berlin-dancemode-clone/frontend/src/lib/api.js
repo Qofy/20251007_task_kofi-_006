@@ -119,6 +119,139 @@ export const usersAPI = {
   }
 };
 
+// Data management API
+export const dataAPI = {
+  exportAll: async () => {
+    const response = await api.get('/api/data/export');
+    return response.data;
+  },
+  
+  importAll: async (data) => {
+    const response = await api.post('/api/data/import', data);
+    return response.data;
+  },
+  
+  getStatistics: async () => {
+    const response = await api.get('/api/data/statistics');
+    return response.data;
+  },
+  
+  clearAll: async () => {
+    const response = await api.delete('/api/data/clear');
+    return response.data;
+  },
+  
+  bulkCreateEvents: async (events, replaceExisting = false) => {
+    const response = await api.post('/api/data/bulk/events', {
+      data: events,
+      replace_existing: replaceExisting
+    });
+    return response.data;
+  },
+  
+  bulkCreateVenues: async (venues, replaceExisting = false) => {
+    const response = await api.post('/api/data/bulk/venues', {
+      data: venues,
+      replace_existing: replaceExisting
+    });
+    return response.data;
+  },
+  
+  bulkCreatePackages: async (packages, replaceExisting = false) => {
+    const response = await api.post('/api/data/bulk/packages', {
+      data: packages,
+      replace_existing: replaceExisting
+    });
+    return response.data;
+  }
+};
+
+// Comprehensive data loading for all frontend elements
+export const frontendDataAPI = {
+  loadAllData: async () => {
+    try {
+      const [eventsRes, venuesRes, packagesRes, statsRes] = await Promise.all([
+        eventsAPI.getAll(),
+        venuesAPI.getAll(),
+        packagesAPI.getAll(),
+        dataAPI.getStatistics()
+      ]);
+
+      return {
+        events: eventsRes.data || [],
+        venues: venuesRes.data || [],
+        packages: packagesRes.data || [],
+        statistics: statsRes.data || {},
+        success: true
+      };
+    } catch (error) {
+      console.error('Error loading all frontend data:', error);
+      return {
+        events: [],
+        venues: [],
+        packages: [],
+        statistics: {},
+        success: false,
+        error: error.message
+      };
+    }
+  },
+
+  saveAllData: async (data) => {
+    try {
+      const results = {
+        events: { success: 0, errors: 0 },
+        venues: { success: 0, errors: 0 },
+        packages: { success: 0, errors: 0 }
+      };
+
+      // Save venues first (events might depend on venues)
+      if (data.venues && data.venues.length > 0) {
+        const venueResult = await dataAPI.bulkCreateVenues(data.venues, data.replaceExisting);
+        if (venueResult.success) {
+          results.venues = {
+            success: venueResult.data.success_count,
+            errors: venueResult.data.error_count
+          };
+        }
+      }
+
+      // Save packages
+      if (data.packages && data.packages.length > 0) {
+        const packageResult = await dataAPI.bulkCreatePackages(data.packages, data.replaceExisting);
+        if (packageResult.success) {
+          results.packages = {
+            success: packageResult.data.success_count,
+            errors: packageResult.data.error_count
+          };
+        }
+      }
+
+      // Save events
+      if (data.events && data.events.length > 0) {
+        const eventResult = await dataAPI.bulkCreateEvents(data.events, data.replaceExisting);
+        if (eventResult.success) {
+          results.events = {
+            success: eventResult.data.success_count,
+            errors: eventResult.data.error_count
+          };
+        }
+      }
+
+      return {
+        success: true,
+        results
+      };
+    } catch (error) {
+      console.error('Error saving all data:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+};
+
 // Health check
 export const healthAPI = {
   check: async () => {

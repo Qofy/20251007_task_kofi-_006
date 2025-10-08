@@ -160,6 +160,112 @@ impl Database {
         Ok(venues)
     }
 
+    // Bulk data operations for comprehensive data management
+    pub async fn export_all_data(&self) -> Result<DatabaseExport> {
+        let users = self.get_all_users().await?;
+        let events = self.get_all_events().await?;
+        let venues = self.get_all_venues().await?;
+        let packages = self.get_all_packages().await?;
+        let registrations = self.get_all_registrations().await?;
+
+        Ok(DatabaseExport {
+            users,
+            events,
+            venues,
+            packages,
+            registrations,
+            exported_at: Utc::now(),
+            version: "1.0".to_string(),
+        })
+    }
+
+    pub async fn import_all_data(&self, data: &DatabaseExport) -> Result<()> {
+        // Clear existing data first (optional)
+        log::info!("Importing {} users, {} events, {} venues, {} packages, {} registrations", 
+                   data.users.len(), data.events.len(), data.venues.len(), 
+                   data.packages.len(), data.registrations.len());
+
+        // Import venues first (events depend on venues)
+        for venue in &data.venues {
+            self.create_venue(venue).await?;
+        }
+
+        // Import users
+        for user in &data.users {
+            self.create_user(user).await?;
+        }
+
+        // Import packages
+        for package in &data.packages {
+            self.create_package(package).await?;
+        }
+
+        // Import events
+        for event in &data.events {
+            self.create_event(event).await?;
+        }
+
+        // Import registrations
+        for registration in &data.registrations {
+            self.create_registration(registration).await?;
+        }
+
+        log::info!("Data import completed successfully");
+        Ok(())
+    }
+
+    pub async fn get_all_users(&self) -> Result<Vec<User>> {
+        let mut users = Vec::new();
+        let prefix = "user:";
+        
+        for item in self.db.scan_prefix(prefix) {
+            let (_, value) = item?;
+            let user: User = self.deserialize(value)?;
+            users.push(user);
+        }
+        
+        users.sort_by(|a, b| a.created_at.cmp(&b.created_at));
+        Ok(users)
+    }
+
+    pub async fn get_all_registrations(&self) -> Result<Vec<Registration>> {
+        let mut registrations = Vec::new();
+        let prefix = "registration:";
+        
+        for item in self.db.scan_prefix(prefix) {
+            let (_, value) = item?;
+            let registration: Registration = self.deserialize(value)?;
+            registrations.push(registration);
+        }
+        
+        registrations.sort_by(|a, b| b.created_at.cmp(&a.created_at));
+        Ok(registrations)
+    }
+
+    pub async fn clear_all_data(&self) -> Result<()> {
+        self.db.clear()?;
+        log::info!("All data cleared successfully");
+        Ok(())
+    }
+
+    pub async fn get_data_statistics(&self) -> Result<DataStatistics> {
+        let users_count = self.db.scan_prefix("user:").count();
+        let events_count = self.db.scan_prefix("event:").count();
+        let venues_count = self.db.scan_prefix("venue:").count();
+        let packages_count = self.db.scan_prefix("package:").count();
+        let registrations_count = self.db.scan_prefix("registration:").count();
+
+        Ok(DataStatistics {
+            users: users_count,
+            events: events_count,
+            venues: venues_count,
+            packages: packages_count,
+            registrations: registrations_count,
+            total_records: users_count + events_count + venues_count + packages_count + registrations_count,
+            last_updated: Utc::now(),
+        })
+    }
+
     // Initialize with sample data
     pub async fn init_sample_data(&self) -> Result<()> {
         // Check if data already exists
@@ -167,51 +273,77 @@ impl Database {
             return Ok(()); // Data already exists
         }
 
-        // Create sample venues
+        // Create sample venues for electronic music events
         let venue1 = Venue {
             id: Uuid::new_v4(),
-            name: "Dance Studio Berlin".to_string(),
-            address: "Mitte, Berlin, Germany".to_string(),
-            capacity: 50,
-            description: Some("A beautiful dance studio in the heart of Berlin".to_string()),
+            name: "Berghain".to_string(),
+            address: "Am Wriezener Bahnhof, 10243 Berlin, Germany".to_string(),
+            capacity: 1500,
+            description: Some("World-famous techno temple, the mecca of electronic music".to_string()),
         };
 
         let venue2 = Venue {
             id: Uuid::new_v4(),
-            name: "Community Center Kreuzberg".to_string(),
-            address: "Kreuzberg, Berlin, Germany".to_string(),
-            capacity: 80,
-            description: Some("Spacious community center perfect for dance events".to_string()),
+            name: "Watergate".to_string(),
+            address: "Falckensteinstraße 49, 10997 Berlin, Germany".to_string(),
+            capacity: 300,
+            description: Some("Sophisticated club with panoramic views of the Spree River".to_string()),
+        };
+
+        let venue3 = Venue {
+            id: Uuid::new_v4(),
+            name: "Tresor".to_string(),
+            address: "Köpenicker Str. 70, 10179 Berlin, Germany".to_string(),
+            capacity: 800,
+            description: Some("Legendary underground techno club in a former bank vault".to_string()),
+        };
+
+        let venue4 = Venue {
+            id: Uuid::new_v4(),
+            name: "Sisyphos".to_string(),
+            address: "Hauptstraße 15, 10317 Berlin, Germany".to_string(),
+            capacity: 1000,
+            description: Some("Outdoor electronic music venue with multiple dance floors".to_string()),
         };
 
         self.create_venue(&venue1).await?;
         self.create_venue(&venue2).await?;
+        self.create_venue(&venue3).await?;
+        self.create_venue(&venue4).await?;
 
-        // Create sample packages
+        // Create sample packages for electronic music experiences
         let packages = vec![
             Package {
                 id: Uuid::new_v4(),
-                name: "Beginner Blues".to_string(),
-                description: "Perfect introduction to Blues dancing".to_string(),
-                price: 45.0,
+                name: "Underground Initiation".to_string(),
+                description: "Your first taste of Berlin's underground electronic scene. Perfect for newcomers who want to experience authentic techno culture.".to_string(),
+                price: 75.0,
                 duration_days: 1,
-                max_participants: 20,
-            },
-            Package {
-                id: Uuid::new_v4(),
-                name: "Fusion Experience".to_string(),
-                description: "Explore the fusion of different dance styles".to_string(),
-                price: 85.0,
-                duration_days: 2,
-                max_participants: 25,
-            },
-            Package {
-                id: Uuid::new_v4(),
-                name: "Blues & Fusion Immersion".to_string(),
-                description: "Deep dive into Blues and Fusion dancing".to_string(),
-                price: 180.0,
-                duration_days: 5,
                 max_participants: 15,
+            },
+            Package {
+                id: Uuid::new_v4(),
+                name: "Techno Temple Tour".to_string(),
+                description: "Experience the legendary venues that shaped electronic music history. Includes skip-the-line access and expert guide.".to_string(),
+                price: 145.0,
+                duration_days: 2,
+                max_participants: 12,
+            },
+            Package {
+                id: Uuid::new_v4(),
+                name: "Berlin Electronic Marathon".to_string(),
+                description: "The ultimate electronic music journey. 48 hours of non-stop parties across Berlin's most iconic venues.".to_string(),
+                price: 280.0,
+                duration_days: 3,
+                max_participants: 10,
+            },
+            Package {
+                id: Uuid::new_v4(),
+                name: "VIP Scene Access".to_string(),
+                description: "Exclusive access to private parties, meet top DJs, and experience Berlin's electronic scene like an insider.".to_string(),
+                price: 450.0,
+                duration_days: 5,
+                max_participants: 8,
             },
         ];
 
@@ -219,67 +351,127 @@ impl Database {
             self.create_package(&package).await?;
         }
 
-        // Create sample events based on the website content
+        // Create sample events for electronic music
         let events = vec![
             Event {
                 id: Uuid::new_v4(),
-                title: "Blues & Fusion Alumni Training".to_string(),
-                description: "Advanced training for experienced dancers".to_string(),
-                start_date: chrono::NaiveDate::from_ymd_opt(2025, 9, 25)
-                    .unwrap()
-                    .and_hms_opt(18, 0, 0)
-                    .unwrap()
-                    .and_utc(),
-                end_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 1)
-                    .unwrap()
-                    .and_hms_opt(21, 0, 0)
-                    .unwrap()
-                    .and_utc(),
-                venue_id: venue1.id,
-                max_participants: 15,
-                current_participants: 8,
-                price: 180.0,
-                event_type: EventType::Workshop,
-            },
-            Event {
-                id: Uuid::new_v4(),
-                title: "Blues & Fusion Experience".to_string(),
-                description: "Weekend festival celebrating Blues and Fusion dance".to_string(),
-                start_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 2)
-                    .unwrap()
-                    .and_hms_opt(19, 0, 0)
-                    .unwrap()
-                    .and_utc(),
-                end_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 5)
+                title: "Berghain Masterclass".to_string(),
+                description: "Learn the secrets of getting into Berlin's most exclusive club. Includes dress code guidance, cultural etiquette, and guaranteed entry.".to_string(),
+                start_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 15)
                     .unwrap()
                     .and_hms_opt(23, 0, 0)
                     .unwrap()
                     .and_utc(),
-                venue_id: venue2.id,
-                max_participants: 80,
-                current_participants: 45,
-                price: 85.0,
-                event_type: EventType::Festival,
-            },
-            Event {
-                id: Uuid::new_v4(),
-                title: "Movement & Blues Immersion".to_string(),
-                description: "Intensive week-long immersion in movement and blues".to_string(),
-                start_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 6)
+                end_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 16)
                     .unwrap()
-                    .and_hms_opt(10, 0, 0)
-                    .unwrap()
-                    .and_utc(),
-                end_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 12)
-                    .unwrap()
-                    .and_hms_opt(18, 0, 0)
+                    .and_hms_opt(6, 0, 0)
                     .unwrap()
                     .and_utc(),
                 venue_id: venue1.id,
                 max_participants: 20,
-                current_participants: 12,
-                price: 280.0,
+                current_participants: 14,
+                price: 120.0,
+                event_type: EventType::Workshop,
+            },
+            Event {
+                id: Uuid::new_v4(),
+                title: "Warehouse Rave Experience".to_string(),
+                description: "Authentic underground warehouse party featuring top international DJs. Raw techno in its purest form.".to_string(),
+                start_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 18)
+                    .unwrap()
+                    .and_hms_opt(22, 0, 0)
+                    .unwrap()
+                    .and_utc(),
+                end_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 19)
+                    .unwrap()
+                    .and_hms_opt(8, 0, 0)
+                    .unwrap()
+                    .and_utc(),
+                venue_id: venue4.id,
+                max_participants: 100,
+                current_participants: 67,
+                price: 35.0,
+                event_type: EventType::Social,
+            },
+            Event {
+                id: Uuid::new_v4(),
+                title: "Techno Festival Weekend".to_string(),
+                description: "Three-day electronic music festival featuring 50+ artists across multiple venues. The ultimate Berlin electronic experience.".to_string(),
+                start_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 25)
+                    .unwrap()
+                    .and_hms_opt(18, 0, 0)
+                    .unwrap()
+                    .and_utc(),
+                end_date: chrono::NaiveDate::from_ymd_opt(2025, 10, 28)
+                    .unwrap()
+                    .and_hms_opt(6, 0, 0)
+                    .unwrap()
+                    .and_utc(),
+                venue_id: venue2.id,
+                max_participants: 500,
+                current_participants: 234,
+                price: 185.0,
+                event_type: EventType::Festival,
+            },
+            Event {
+                id: Uuid::new_v4(),
+                title: "Electronic Music Production Intensive".to_string(),
+                description: "Week-long intensive course in electronic music production. Learn from Berlin's top producers in professional studios.".to_string(),
+                start_date: chrono::NaiveDate::from_ymd_opt(2025, 11, 1)
+                    .unwrap()
+                    .and_hms_opt(10, 0, 0)
+                    .unwrap()
+                    .and_utc(),
+                end_date: chrono::NaiveDate::from_ymd_opt(2025, 11, 8)
+                    .unwrap()
+                    .and_hms_opt(18, 0, 0)
+                    .unwrap()
+                    .and_utc(),
+                venue_id: venue3.id,
+                max_participants: 12,
+                current_participants: 8,
+                price: 680.0,
                 event_type: EventType::Intensive,
+            },
+            Event {
+                id: Uuid::new_v4(),
+                title: "DJ Competition Finals".to_string(),
+                description: "Annual DJ competition finale. Watch emerging talent compete for a chance to play at Berlin's top venues.".to_string(),
+                start_date: chrono::NaiveDate::from_ymd_opt(2025, 11, 12)
+                    .unwrap()
+                    .and_hms_opt(20, 0, 0)
+                    .unwrap()
+                    .and_utc(),
+                end_date: chrono::NaiveDate::from_ymd_opt(2025, 11, 13)
+                    .unwrap()
+                    .and_hms_opt(4, 0, 0)
+                    .unwrap()
+                    .and_utc(),
+                venue_id: venue2.id,
+                max_participants: 300,
+                current_participants: 189,
+                price: 25.0,
+                event_type: EventType::Competition,
+            },
+            Event {
+                id: Uuid::new_v4(),
+                title: "Rooftop Sunrise Sessions".to_string(),
+                description: "Experience Berlin's famous sunrise sessions on a rooftop venue. House and techno as the city wakes up.".to_string(),
+                start_date: chrono::NaiveDate::from_ymd_opt(2025, 11, 15)
+                    .unwrap()
+                    .and_hms_opt(4, 0, 0)
+                    .unwrap()
+                    .and_utc(),
+                end_date: chrono::NaiveDate::from_ymd_opt(2025, 11, 15)
+                    .unwrap()
+                    .and_hms_opt(12, 0, 0)
+                    .unwrap()
+                    .and_utc(),
+                venue_id: venue4.id,
+                max_participants: 80,
+                current_participants: 52,
+                price: 45.0,
+                event_type: EventType::Social,
             },
         ];
 
@@ -287,7 +479,7 @@ impl Database {
             self.create_event(&event).await?;
         }
 
-        log::info!("Sample data initialized successfully");
+        log::info!("Sample electronic music data initialized successfully");
         Ok(())
     }
 }
