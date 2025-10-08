@@ -1,20 +1,93 @@
 <script>
   import { onMount } from 'svelte'
-  import api from '../services/api.js'
 
-  let packages = []
-  let loading = true
-
-  onMount(async () => {
-    try {
-      const response = await api.packages.getAll()
-      packages = response.data || []
-    } catch (error) {
-      console.error('Error loading packages:', error)
-    } finally {
-      loading = false
+  let packages = [
+    {
+      id: 1,
+      name: "Weekend Warrior",
+      price: 89,
+      description: "Perfect for newcomers to Berlin's dance scene. Experience the city's underground culture with guided access to the best clubs.",
+      badge: "Most Popular",
+      features: [
+        "Access to 3 premium clubs (Berghain, Watergate, Tresor)",
+        "Skip-the-line priority entry",
+        "Welcome drink at each venue",
+        "Professional club guide for first-timers",
+        "Digital map with club locations",
+        "24/7 emergency support hotline",
+        "Exclusive DanceMode wristband"
+      ],
+      duration: "2 nights",
+      includes: "Friday & Saturday night events"
+    },
+    {
+      id: 2,
+      name: "Techno Devotee",
+      price: 145,
+      description: "For serious techno enthusiasts. Deep dive into Berlin's legendary techno temples with VIP treatment and exclusive areas.",
+      badge: "VIP Experience",
+      features: [
+        "VIP entry to 5 legendary techno venues",
+        "Backstage meet & greet with resident DJs",
+        "Reserved table in VIP lounge areas",
+        "Premium cocktail package (5 drinks)",
+        "Exclusive after-party invitations",
+        "Limited edition Berghain merchandise",
+        "Personal concierge service",
+        "Photo session in iconic club locations"
+      ],
+      duration: "3 nights",
+      includes: "Thursday, Friday & Saturday events"
+    },
+    {
+      id: 3,
+      name: "Berlin Explorer",
+      price: 199,
+      description: "The ultimate Berlin dance experience. Explore diverse music scenes from techno to house, electronic to experimental across the city.",
+      badge: "Complete Experience",
+      features: [
+        "Access to 8 different venues across all districts",
+        "Multi-genre experience (Techno, House, Minimal, Experimental)",
+        "Private transportation between venues",
+        "Gourmet dinner at renowned Berlin restaurant",
+        "Meet local DJs and producers",
+        "Studio tour at iconic electronic music labels",
+        "Exclusive vinyl record from Berlin Underground",
+        "Professional photographer for memories",
+        "Customized playlist from your weekend"
+      ],
+      duration: "Full weekend",
+      includes: "Thursday through Sunday events + cultural activities"
+    },
+    {
+      id: 4,
+      name: "Culture & Beats",
+      price: 115,
+      description: "Combine Berlin's rich cultural heritage with its modern electronic music scene. Perfect balance of day culture and night beats.",
+      badge: "Cultural Fusion",
+      features: [
+        "Guided tour of Berlin Wall and electronic music history",
+        "Visit to iconic record stores (Spacehall, Hard Wax)",
+        "Access to 4 diverse venues (clubs + cultural spaces)",
+        "Workshop: 'Introduction to Electronic Music Production'",
+        "Traditional German dinner with electronic ambient",
+        "Museum pass for music and contemporary art",
+        "Local artist networking session",
+        "Souvenir package with Berlin music memorabilia"
+      ],
+      duration: "2 days, 2 nights",
+      includes: "Cultural activities + weekend nightlife"
     }
-  })
+  ]
+
+  let loading = false
+  let selectedPackage = null
+
+  function selectPackage(pkg) {
+    selectedPackage = pkg
+    // Here you would typically integrate with a booking system
+    alert(`Selected: ${pkg.name} - €${pkg.price}. Booking system integration coming soon!`)
+  }
 </script>
 
 <svelte:head>
@@ -24,8 +97,22 @@
 <main>
   <div class="container">
     <header class="page-header">
-      <h1>Exclusive Packages</h1>
-      <p>Choose from our carefully curated packages for the ultimate Berlin dance experience</p>
+      <h1>Berlin Dance Packages</h1>
+      <p>Immerse yourself in Berlin's legendary electronic music scene with our expertly curated experiences. From techno temples to underground culture, discover the heartbeat of Europe's dance capital.</p>
+      <div class="header-stats">
+        <div class="stat">
+          <span class="stat-number">20+</span>
+          <span class="stat-label">Premium Venues</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">50+</span>
+          <span class="stat-label">World-Class DJs</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">24/7</span>
+          <span class="stat-label">Support</span>
+        </div>
+      </div>
     </header>
 
     {#if loading}
@@ -36,33 +123,66 @@
     {:else if packages.length > 0}
       <div class="packages-grid">
         {#each packages as pkg}
-          <div class="package-card">
+          <div class="package-card" class:featured={pkg.badge === 'Most Popular'}>
             <div class="package-header">
               <h3>{pkg.name}</h3>
-              <div class="package-badge">Popular</div>
+              <div class="package-badge {pkg.badge === 'Most Popular' ? 'popular' : pkg.badge === 'VIP Experience' ? 'vip' : pkg.badge === 'Complete Experience' ? 'complete' : 'cultural'}">{pkg.badge}</div>
             </div>
             <div class="package-price">
               <span class="currency">€</span>
               <span class="amount">{pkg.price}</span>
               <span class="period">/person</span>
             </div>
+            <div class="package-details">
+              <div class="duration-info">
+                <span class="duration-label">Duration:</span>
+                <span class="duration-value">{pkg.duration}</span>
+              </div>
+              <div class="includes-info">
+                <span class="includes-label">Includes:</span>
+                <span class="includes-value">{pkg.includes}</span>
+              </div>
+            </div>
             <div class="package-content">
               <p class="package-description">{pkg.description}</p>
               <div class="features-section">
                 <h4>What's Included:</h4>
                 <ul class="features-list">
-                  {#each pkg.features || ['Event access', 'Welcome drink', 'VIP area access'] as feature}
+                  {#each pkg.features as feature}
                     <li>{feature}</li>
                   {/each}
                 </ul>
               </div>
             </div>
             <div class="package-footer">
-              <button class="btn-primary">Select Package</button>
-              <p class="terms">No hidden fees • Cancel anytime</p>
+              <button class="btn-primary" on:click={() => selectPackage(pkg)}>
+                Select {pkg.name} Package
+              </button>
+              <p class="terms">Free cancellation up to 24h • Secure payment</p>
             </div>
           </div>
         {/each}
+      </div>
+      
+      <!-- Additional Information Section -->
+      <div class="info-section">
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">🎧</div>
+            <h3>Expert Curation</h3>
+            <p>Our packages are designed by Berlin nightlife experts who know the city's hidden gems and legendary venues.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🔒</div>
+            <h3>Guaranteed Entry</h3>
+            <p>Skip the uncertainty. All our packages include guaranteed entry to venues, even on the busiest nights.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🌟</div>
+            <h3>Local Connections</h3>
+            <p>Connect with Berlin's electronic music community through exclusive events and networking opportunities.</p>
+          </div>
+        </div>
       </div>
     {:else}
       <div class="empty-state">
@@ -104,8 +224,34 @@
   .page-header p {
     font-size: 1.2rem;
     color: #718096;
-    max-width: 600px;
-    margin: 0 auto;
+    max-width: 700px;
+    margin: 0 auto 2rem auto;
+    line-height: 1.6;
+  }
+
+  .header-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #718096;
+    font-weight: 500;
   }
 
   .loading {
@@ -145,6 +291,12 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     position: relative;
+    border: 2px solid transparent;
+  }
+
+  .package-card.featured {
+    border: 2px solid #667eea;
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.2);
   }
 
   .package-card:hover {
@@ -164,12 +316,34 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: rgba(255, 255, 255, 0.2);
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
     backdrop-filter: blur(10px);
+  }
+
+  .package-badge.popular {
+    background: rgba(255, 215, 0, 0.9);
+    color: #333;
+  }
+
+  .package-badge.vip {
+    background: rgba(255, 20, 147, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .package-badge.complete {
+    background: rgba(34, 197, 94, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .package-badge.cultural {
+    background: rgba(168, 85, 247, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
   .package-header h3 {
@@ -200,6 +374,37 @@
   .period {
     font-size: 1rem;
     color: #718096;
+  }
+
+  .package-details {
+    padding: 1.5rem 2rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .duration-info, .includes-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .includes-info {
+    margin-bottom: 0;
+  }
+
+  .duration-label, .includes-label {
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 0.9rem;
+  }
+
+  .duration-value, .includes-value {
+    color: #667eea;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-align: right;
+    max-width: 60%;
   }
 
   .package-content {
@@ -294,6 +499,43 @@
     margin-bottom: 0.5rem;
   }
 
+  .info-section {
+    margin-top: 4rem;
+    padding: 3rem 0;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 0 2rem;
+  }
+
+  .info-card {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .info-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .info-card h3 {
+    color: #2d3748;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .info-card p {
+    color: #718096;
+    line-height: 1.6;
+  }
+
   @media (max-width: 768px) {
     main {
       padding: 1rem;
@@ -309,6 +551,24 @@
 
     .amount {
       font-size: 2.5rem;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+      padding: 0 1rem;
+    }
+
+    .duration-value, .includes-value {
+      max-width: 50%;
+      font-size: 0.8rem;
+    }
+
+    .header-stats {
+      gap: 2rem;
+    }
+
+    .stat-number {
+      font-size: 1.5rem;
     }
   }
 </style>
