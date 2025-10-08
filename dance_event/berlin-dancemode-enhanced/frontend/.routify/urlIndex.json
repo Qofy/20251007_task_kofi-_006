@@ -1,11 +1,11 @@
 [
   "/about",
-  "/creator/index",
   "/dashboard",
   "/events",
   "/index",
   "/login",
   "/packages",
   "/register",
+  "/slots/cards",
   "/venues"
 ]

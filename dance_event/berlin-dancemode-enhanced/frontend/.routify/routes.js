@@ -1,11 +1,11 @@
 
 /**
  * @roxi/routify 2.18.18
- * File generated Wed Oct 08 2025 10:51:02 GMT+0200 (Central European Summer Time)
+ * File generated Wed Oct 08 2025 11:17:02 GMT+0200 (Central European Summer Time)
  */
 
 export const __version = "2.18.18"
-export const __timestamp = "2025-10-08T08:51:02.020Z"
+export const __timestamp = "2025-10-08T09:17:02.831Z"
 
 //buildRoutes
 import { buildClientTree } from "@roxi/routify/runtime/buildRoutes.js"
@@ -58,33 +58,7 @@ export const _tree = {
       "ext": "",
       "badExt": false,
       "absolutePath": "/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-enhanced/frontend/src/pages/creator",
-      "children": [
-        {
-          "isFile": true,
-          "isDir": false,
-          "file": "index.svelte",
-          "filepath": "/creator/index.svelte",
-          "name": "index",
-          "ext": "svelte",
-          "badExt": false,
-          "absolutePath": "/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-enhanced/frontend/src/pages/creator/index.svelte",
-          "importPath": "../src/pages/creator/index.svelte",
-          "isLayout": false,
-          "isReset": false,
-          "isIndex": true,
-          "isFallback": false,
-          "isPage": true,
-          "ownMeta": {},
-          "meta": {
-            "recursive": true,
-            "preload": false,
-            "prerender": true
-          },
-          "path": "/creator/index",
-          "id": "_creator_index",
-          "component": () => import('../src/pages/creator/index.svelte').then(m => m.default)
-        }
-      ],
+      "children": [],
       "isLayout": false,
       "isReset": false,
       "isIndex": false,
@@ -247,6 +221,55 @@ export const _tree = {
       "path": "/register",
       "id": "_register",
       "component": () => import('../src/pages/register.svelte').then(m => m.default)
+    },
+    {
+      "isFile": false,
+      "isDir": true,
+      "file": "slots",
+      "filepath": "/slots",
+      "name": "slots",
+      "ext": "",
+      "badExt": false,
+      "absolutePath": "/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-enhanced/frontend/src/pages/slots",
+      "children": [
+        {
+          "isFile": true,
+          "isDir": false,
+          "file": "cards.svelte",
+          "filepath": "/slots/cards.svelte",
+          "name": "cards",
+          "ext": "svelte",
+          "badExt": false,
+          "absolutePath": "/Users/safokofi/Desktop/internship/20251007_kofi_task_006_intuivo/20251007_task_kofi _006/dance_event/berlin-dancemode-enhanced/frontend/src/pages/slots/cards.svelte",
+          "importPath": "../src/pages/slots/cards.svelte",
+          "isLayout": false,
+          "isReset": false,
+          "isIndex": false,
+          "isFallback": false,
+          "isPage": true,
+          "ownMeta": {},
+          "meta": {
+            "recursive": true,
+            "preload": false,
+            "prerender": true
+          },
+          "path": "/slots/cards",
+          "id": "_slots_cards",
+          "component": () => import('../src/pages/slots/cards.svelte').then(m => m.default)
+        }
+      ],
+      "isLayout": false,
+      "isReset": false,
+      "isIndex": false,
+      "isFallback": false,
+      "isPage": false,
+      "ownMeta": {},
+      "meta": {
+        "recursive": true,
+        "preload": false,
+        "prerender": true
+      },
+      "path": "/slots"
     },
     {
       "isFile": true,

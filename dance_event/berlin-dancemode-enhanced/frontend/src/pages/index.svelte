@@ -3,6 +3,7 @@
   import { authStore } from '../stores/auth.js'
   import api from '../services/api.js'
   import { url } from '@roxi/routify'
+  import Cards from './slots/cards.svelte';
 
   let events = []
   let packages = []
@@ -32,8 +33,20 @@
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">
-      <h1>Welcome to Berlin DanceMode</h1>
-      <p>Discover the hottest dance events, exclusive packages, and amazing venues in Berlin's vibrant nightlife scene.</p>
+      <h1>
+Welcome to
+Berlin DanceMode Experience
+Edition 2025
+</h1>
+      <p>
+In our 14th year celebrating:
+ We will focus again on
+﻿Blues & Fusion dancing,
+learning, community and self-care.
+
+All this is happening in Berlin for
+dancers and music lovers:
+</p>
       
       {#if $authStore.isAuthenticated}
         <div class="hero-actions">
@@ -54,113 +67,64 @@
     </div>
   </section>
 
-  <!-- Featured Events -->
-  <section class="featured-section">
+  <!-- Featured Events Cards Section -->
+  <section class="cards-section">
     <div class="container">
-      <h2>Featured Events</h2>
-      {#if loading}
-        <div class="loading">Loading events...</div>
-      {:else if events.length > 0}
-        <div class="events-grid">
-          {#each events as event}
-            <div class="event-card">
-              <div class="event-image">
-                <div class="event-date">
-                  <span class="day">{new Date(event.date).getDate()}</span>
-                  <span class="month">{new Date(event.date).toLocaleDateString('en', { month: 'short' })}</span>
-                </div>
-              </div>
-              <div class="event-info">
-                <h3>{event.name}</h3>
-                <p class="venue">{event.venue}</p>
-                <p class="description">{event.description.substring(0, 100)}...</p>
-                <div class="event-meta">
-                  <span class="price">€{event.price}</span>
-                  <span class="time">{new Date(event.date).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })}</span>
-                </div>
-              </div>
+      <div class="cards-grid">
+        <!-- Card 1: Blues & Fusion Alumni Training -->
+        <Cards>
+          <div slot="header">
+            <h4>Berlin Blues & Fusion Alumni Training</h4>
+          </div>
+          <div slot="content">
+            <p>Join our intensive training program designed for experienced dancers looking to deepen their blues and fusion skills.</p>
+            <div class="event-details">
+              <span class="date">📅 September 25 - October 1</span>
+              <span class="location">📍 Berlin Dance Studio</span>
+              <span class="level">⭐ Advanced Level</span>
             </div>
-          {/each}
-        </div>
-        <div class="section-footer">
-          <a href={$url('/events')} class="btn-outline">View All Events</a>
-        </div>
-      {:else}
-        <div class="empty-state">
-          <p>No events available at the moment.</p>
-        </div>
-      {/if}
-    </div>
-  </section>
+          </div>
+          <div slot="footer">
+            <a class="btn-outline" href="https://berlin-dancemode.com/events">Find Out More</a>
+          </div>
+        </Cards>
 
-  <!-- Featured Packages -->
-  <section class="featured-section packages-section">
-    <div class="container">
-      <h2>Exclusive Packages</h2>
-      {#if loading}
-        <div class="loading">Loading packages...</div>
-      {:else if packages.length > 0}
-        <div class="packages-grid">
-          {#each packages as pkg}
-            <div class="package-card">
-              <div class="package-header">
-                <h3>{pkg.name}</h3>
-                <div class="package-price">€{pkg.price}</div>
-              </div>
-              <div class="package-content">
-                <p>{pkg.description}</p>
-                <ul class="package-features">
-                  {#each pkg.features || [] as feature}
-                    <li>{feature}</li>
-                  {/each}
-                </ul>
-              </div>
-              <div class="package-footer">
-                <button class="btn-primary">Select Package</button>
-              </div>
+        <!-- Card 2: Fusion Dance Weekend -->
+        <Cards>
+          <div slot="header">
+            <h4>Fusion Dance Weekend Intensive</h4>
+          </div>
+          <div slot="content">
+            <p>A weekend dedicated to exploring connection, musicality, and creative expression through fusion dance.</p>
+            <div class="event-details">
+              <span class="date">📅 October 14 - 15</span>
+              <span class="location">📍 Movement Space Berlin</span>
+              <span class="level">⭐ All Levels Welcome</span>
             </div>
-          {/each}
-        </div>
-        <div class="section-footer">
-          <a href={$url('/packages')} class="btn-outline">View All Packages</a>
-        </div>
-      {:else}
-        <div class="empty-state">
-          <p>No packages available at the moment.</p>
-        </div>
-      {/if}
-    </div>
-  </section>
+          </div>
+          <div slot="footer">
+            <a class="btn-outline" href="https://berlin-dancemode.com/events">Find Out More</a>
+          </div>
+        </Cards>
 
-  <!-- Featured Venues -->
-  <section class="featured-section">
-    <div class="container">
-      <h2>Popular Venues</h2>
-      {#if loading}
-        <div class="loading">Loading venues...</div>
-      {:else if venues.length > 0}
-        <div class="venues-grid">
-          {#each venues as venue}
-            <div class="venue-card">
-              <div class="venue-info">
-                <h3>{venue.name}</h3>
-                <p class="venue-address">{venue.address}</p>
-                <p class="venue-description">{venue.description.substring(0, 120)}...</p>
-                <div class="venue-meta">
-                  <span class="capacity">Capacity: {venue.capacity}</span>
-                </div>
-              </div>
+        <!-- Card 3: Community Social Dance -->
+        <Cards>
+          <div slot="header">
+            <h4>Monthly Community Social</h4>
+          </div>
+          <div slot="content">
+            <p>Connect with the Berlin dance community in a welcoming environment. Live DJ, refreshments, and great vibes!</p>
+            <div class="event-details">
+              <span class="date">📅 Every Last Saturday</span>
+              <span class="location">📍 Community Center</span>
+              <span class="level">⭐ Open to Everyone</span>
             </div>
-          {/each}
-        </div>
-        <div class="section-footer">
-          <a href={$url('/venues')} class="btn-outline">View All Venues</a>
-        </div>
-      {:else}
-        <div class="empty-state">
-          <p>No venues available at the moment.</p>
-        </div>
-      {/if}
+          </div>
+          <div slot="footer">
+            <a class="btn-outline" href="https://berlin-dancemode.com/events">Find Out More</a>
+          </div>
+        </Cards>
+      </div>
     </div>
   </section>
 </main>
@@ -170,8 +134,67 @@
     min-height: 100vh;
   }
 
+  h4 {
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    font-size: 1.8rem;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  /* Cards Section Styles */
+  .cards-section {
+    padding: 4rem 2rem;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .cards-section h2 {
+    text-align: center;
+    font-size: 2.8rem;
+    margin-bottom: 3rem;
+    color: #2d3748;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .cards-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .event-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .event-details span {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+  }
+
+  .date {
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+
+  .location {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  .level {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 600 !important;
+  }
   .hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: url('https://www.wearemci.com/uploads/media/1920x/04/5594-Experiences%20%26%20Events.jpg?v=1-0');
     color: white;
     padding: 4rem 2rem;
     display: flex;
@@ -525,6 +548,32 @@
 
     .events-grid, .packages-grid, .venues-grid {
       grid-template-columns: 1fr;
+    }
+
+    /* Cards section responsive */
+    .cards-section {
+      padding: 2rem 1rem;
+    }
+
+    .cards-section h2 {
+      font-size: 2.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .cards-grid {
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    h4 {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 1200px) and (min-width: 769px) {
+    .cards-grid {
+      gap: 1.5rem;
     }
   }
 </style>
