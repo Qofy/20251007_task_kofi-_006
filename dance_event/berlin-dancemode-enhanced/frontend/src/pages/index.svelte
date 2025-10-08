@@ -12,9 +12,9 @@
   onMount(async () => {
     try {
       const [eventsData, packagesData, venuesData] = await Promise.all([
-        api.getEvents({ limit: 6 }),
-        api.getPackages({ limit: 3 }),
-        api.getVenues({ limit: 3 })
+        api.events.getAll(),
+        api.packages.getAll(),
+        api.venues.getAll()
       ])
       
       events = eventsData.data || []

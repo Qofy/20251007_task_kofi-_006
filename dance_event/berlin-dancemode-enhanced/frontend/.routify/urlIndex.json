@@ -1,6 +1,11 @@
 [
+  "/about",
   "/creator/index",
+  "/dashboard",
+  "/events",
   "/index",
   "/login",
-  "/register"
+  "/packages",
+  "/register",
+  "/venues"
 ]

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { authStore } from '../stores/auth.js'
 
-const API_BASE_URL = 'http://localhost:8080'
+const API_BASE_URL = 'http://localhost:8081'
 
 // Create axios instance
 const api = axios.create({

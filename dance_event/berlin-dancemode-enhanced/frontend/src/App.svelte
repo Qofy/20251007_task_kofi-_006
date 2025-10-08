@@ -3,23 +3,11 @@
   import { routes } from '../.routify/routes'
   import NavigationBar from './components/NavigationBar.svelte'
   import { authStore } from './stores/auth.js'
-
-  const router = new Router({
-    routes,
-    urlRewrite: [
-      {
-        toInternal: [/^\/(.*)/, '/$1'],
-        toExternal: [/^\/(.*)/, '/$1']
-      }
-    ]
-  })
 </script>
 
 <div class="app">
-  <NavigationBar />
-  
   <main>
-    <Router {router} />
+    <Router {routes} />
   </main>
 
   <footer>

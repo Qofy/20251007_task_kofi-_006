@@ -6,24 +6,32 @@
     authStore.logout()
     window.location.href = '/'
   }
+
+  function safeUrl(path) {
+    try {
+      return $url(path)
+    } catch (e) {
+      return path
+    }
+  }
 </script>
 
 <nav class="navbar">
   <div class="nav-container">
-    <a href={$url('/')} class="nav-brand">Berlin DanceMode</a>
+    <a href={safeUrl('/')} class="nav-brand">Berlin DanceMode</a>
     
     <div class="nav-menu">
-      <a href={$url('/')}>Home</a>
-      <a href={$url('/events')}>Events</a>
-      <a href={$url('/packages')}>Packages</a>
-      <a href={$url('/venues')}>Venues</a>
-      <a href={$url('/about')}>About</a>
+      <a href={safeUrl('/')}>Home</a>
+      <a href={safeUrl('/events')}>Events</a>
+      <a href={safeUrl('/packages')}>Packages</a>
+      <a href={safeUrl('/venues')}>Venues</a>
+      <a href={safeUrl('/about')}>About</a>
       
       {#if $authStore.isAuthenticated}
         {#if $authStore.isCreator}
-          <a href={$url('/creator')} class="creator-link">Creator Area</a>
+          <a href={safeUrl('/creator')} class="creator-link">Creator Area</a>
         {/if}
-        <a href={$url('/dashboard')}>Dashboard</a>
+        <a href={safeUrl('/dashboard')}>Dashboard</a>
         <div class="user-profile">
           <div class="user-avatar">
             <div class="avatar-circle">
@@ -34,8 +42,8 @@
           <button class="logout-btn" on:click={handleLogout}>Logout</button>
         </div>
       {:else}
-        <a href={$url('/login')}>Login</a>
-        <a href={$url('/register')}>Register</a>
+        <a href={safeUrl('/login')}>Login</a>
+        <a href={safeUrl('/register')}>Register</a>
       {/if}
     </div>
   </div>
